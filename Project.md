@@ -1,6 +1,6 @@
-#CMP202 Project
+# CMP202 Project
 
-##Ideas
+## Ideas
 
 * Encryption/Decryption Tool for Files
     * Encryption Part
