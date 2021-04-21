@@ -14,4 +14,3 @@
         * Ask the user for the key that it was encrypted with
         * Decrypt the file
         * Save decrypted content into file
-    
