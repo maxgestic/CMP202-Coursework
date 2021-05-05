@@ -14,3 +14,9 @@
         * Ask the user for the key that it was encrypted with
         * Decrypt the file
         * Save decrypted content into file
+    
+
+* BlackJack Basic Training Simulator
+    * Will allow the user to play round sof blackjack for practice
+    * User can run simulations on different amounts of Decks to output a Basic Strategy Chart
+    
