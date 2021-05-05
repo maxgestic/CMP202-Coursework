@@ -17,6 +17,26 @@ void Dealer::add_card(const std::pair<int, std::string>& card) {
 
 }
 
+int Dealer::get_soft_value(){
+
+    std::vector<int> countVector;
+    int sum = 0;
+
+    for(auto & i : hand)
+    {
+        countVector.emplace_back(i.first);
+    }
+
+    for (auto & i : countVector){
+
+        sum += i;
+
+    }
+
+    return sum;
+
+}
+
 int Dealer::get_value() {
 
     std::vector<int> countVector;
@@ -66,17 +86,25 @@ int Dealer::get_value() {
 
 void Dealer::print_hand() {
 
-    std::cout << "\nYour current hand is: \n";
+    std::cout << "\nThe dealer's hand is: \n";
 
     for(auto & i : hand)
     {
         std::cout  << "|" << i.second << "| ";
     }
 
-    std::cout << "\nThe value of your hand is: " << get_value() << "\n";
+    std::cout << "\nThe value of their hand is: " << get_value() << "\n";
 
 
 
 }
 
+void Dealer::print_half_hand() {
 
+    std::cout << "\nThe dealer's hand is: \n";
+
+    std::cout  << "|" << hand[0].second << "| | FACE DOWN |";
+
+
+
+}

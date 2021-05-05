@@ -9,6 +9,8 @@ public:
     Dealer();
 
     void print_hand();
+    void print_half_hand();
+    int get_soft_value();
     int get_value();
     void add_card(const std::pair<int, std::string>&);
 
@@ -16,6 +18,7 @@ private:
 
     std::vector<std::pair<int, std::string>> hand;
     int handValue;
+
 
 };
 
