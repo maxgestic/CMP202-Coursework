@@ -10,6 +10,33 @@
 
 int ACE = 1, JACK =10, QUEEN =10, KING = 10;
 
+Deck::Deck(int size) {
+
+    std::cout << "\nCreating pack with " << size << " number of decks\n";
+
+    for (int i = 0; i <= size - 1; i++){
+
+        for (int j = 0; i <= 3; i++){
+
+            deck.emplace_back(ACE,"ACE");
+            deck.emplace_back(2,"TWO");
+            deck.emplace_back(3,"THREE");
+            deck.emplace_back(4,"FOUR");
+            deck.emplace_back(5,"FIVE");
+            deck.emplace_back(6,"SIX");
+            deck.emplace_back(7,"SEVEN");
+            deck.emplace_back(8,"EIGHT");
+            deck.emplace_back(9,"NINE");
+            deck.emplace_back(10,"TEN");
+            deck.emplace_back(JACK,"JACK");
+            deck.emplace_back(QUEEN,"QUEEN");
+            deck.emplace_back(KING,"KING");
+
+        }
+
+    }
+}
+
 void Deck::print_deck() {
 
     std::cout << "Deck size is " << deck.size() << "\nCurrent Deck is: \n";
@@ -51,32 +78,3 @@ std::pair<int, std::string> Deck::drawCard() {
     return frontCard;
 
 }
-
-Deck::Deck(int size) {
-
-    std::cout << "\nCreating pack with " << size << " number of decks\n";
-
-    for (int i = 0; i <= size - 1; i++){
-
-        for (int j = 0; i <= 3; i++){
-
-            deck.emplace_back(ACE,"ACE");
-            deck.emplace_back(2,"TWO");
-            deck.emplace_back(3,"THREE");
-            deck.emplace_back(4,"FOUR");
-            deck.emplace_back(5,"FIVE");
-            deck.emplace_back(6,"SIX");
-            deck.emplace_back(7,"SEVEN");
-            deck.emplace_back(8,"EIGHT");
-            deck.emplace_back(9,"NINE");
-            deck.emplace_back(10,"TEN");
-            deck.emplace_back(JACK,"JACK");
-            deck.emplace_back(QUEEN,"QUEEN");
-            deck.emplace_back(KING,"KING");
-
-        }
-
-    }
-}
-
-

@@ -3,12 +3,19 @@
 #include <vector>
 #include <tuple>
 #include "Deck.h"
+#include "Player.h"
 
 
 int BlackJackRound(){
 
     int deckAmount = 1;
     std::pair<int, std::string> currentCard;
+    std::string playerName;
+
+    std::cout << "\nPlease enter the Players Name: ";
+    std::cin >> playerName;
+
+    Player player(playerName);
 
     std::cout << "\nPlease enter the amount of decks should be in the stack: ";
     std::cin >> deckAmount;
@@ -26,8 +33,9 @@ int BlackJackRound(){
     std::cout << "\nDrawing a Card.\n";
 
     currentCard = deck.drawCard();
+    player.add_card(currentCard);
 
-    std::cout << currentCard.second;
+    player.print_hand();
 
     return 0;
 
