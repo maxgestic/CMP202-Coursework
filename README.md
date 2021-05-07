@@ -19,4 +19,7 @@
 * BlackJack Basic Training Simulator
     * Will allow the user to play round sof blackjack for practice
     * User can run simulations on different amounts of Decks to output a Basic Strategy Chart
-    
+    * Sim Part:
+        * Run sims for each of these:
+            *  10-20 Player Hand v 2-Ace Dealer up-card
+            *  100 scenarios per sim

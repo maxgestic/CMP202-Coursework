@@ -84,6 +84,18 @@ int Dealer::get_value() {
 
 }
 
+int Dealer::get_half_value(){
+
+    std::vector<int> countVector;
+    int sum = 0;
+
+    sum = countVector.emplace_back(hand[0].first);
+
+    return sum;
+
+}
+
+
 void Dealer::print_hand() {
 
     std::cout << "\nThe dealer's hand is: \n";

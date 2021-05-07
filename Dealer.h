@@ -13,13 +13,12 @@ public:
     int get_soft_value();
     int get_value();
     void add_card(const std::pair<int, std::string>&);
+    int get_half_value();
 
 private:
 
     std::vector<std::pair<int, std::string>> hand;
     int handValue;
-
-
 };
 
 
