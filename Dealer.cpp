@@ -55,13 +55,13 @@ int Dealer::get_value() {
 
     while (temp_sum < 21){
 
-        if(temp_sum + 11 < 21 && std::count(countVector.begin(), countVector.end(), 1)){
+        if(temp_sum + 10 < 21 && std::count(countVector.begin(), countVector.end(), 1)){
 
             auto it = std::find(countVector.begin(), countVector.end(), 1);
 
             if (it != countVector.end()){
 
-                countVector[*it] = 11;
+                countVector[*it - 1] = 11;
 
             }
 

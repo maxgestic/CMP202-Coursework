@@ -12,7 +12,7 @@ int ACE = 1, JACK =10, QUEEN =10, KING = 10;
 
 Deck::Deck(int size) {
 
-    std::cout << "\nCreating pack with " << size << " number of decks\n";
+    //std::cout << "\nCreating pack with " << size << " number of decks\n";
 
     for (int i = 0; i <= size - 1; i++){
 
