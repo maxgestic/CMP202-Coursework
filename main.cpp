@@ -10,6 +10,11 @@
 #include <future>
 #include <iostream>
 #include <fstream>
+#include <chrono>
+#include "global.h"
+#include "farm.h"
+#include "sim_task.h"
+#include "task.h"
 
 std::pair ace = std::make_pair(1,"ACE");
 std::pair two = std::make_pair(2,"TWO");
@@ -25,7 +30,12 @@ std::pair jack = std::make_pair(10,"JACK");
 std::pair queen = std::make_pair(10,"QUEEN");
 std::pair king = std::make_pair(10,"KING");
 
-std::vector<std::vector<int>> results;
+std::vector<std::pair<std::pair<int, std::string>,std::pair<int, std::string>>> player_cards;
+std::vector<std::pair<int, std::string>> dealer_cards;
+
+typedef std::chrono::steady_clock the_clock;
+
+std::vector<std::vector<int>> results = {};
 std::mutex result_mutex;
 
 int BlackJackRound(){
@@ -75,7 +85,7 @@ int BlackJackRound(){
     if (player.get_value() == 21 && dealer.get_value() == 21){
 
         //player and dealer has blackjack
-//        std::cout << "\nplayer and dealer has blackjack\n";
+//        std::cout << "\n player and dealer has blackjack\n";
 
         p_blackjack = true;
         d_blackjack = true;
@@ -86,7 +96,7 @@ int BlackJackRound(){
     else if (player.get_value() == 21 && dealer.get_value() != 21){
 
         //player got blackjack
-//        std::cout << "\nplayer got blackjack\n";
+//        std::cout << "\n player got blackjack\n";
 
         p_blackjack = true;
 
@@ -96,7 +106,7 @@ int BlackJackRound(){
     else if (dealer.get_value() == 21 && player.get_value() != 21 ){
 
         //dealer got blackjack
-//        std::cout << "\ndealer got blackjack\n";
+//        std::cout << "\n dealer got blackjack\n";
 
         d_blackjack = true;
 
@@ -142,7 +152,7 @@ int BlackJackRound(){
         if (player.get_value() == 21 && dealer.get_value() == 21){
 
             //player and dealer has blackjack
-//            std::cout << "\nplayer and dealer has blackjack\n";
+//            std::cout << "\n player and dealer has blackjack\n";
 
             p_blackjack = true;
             d_blackjack = true;
@@ -152,7 +162,7 @@ int BlackJackRound(){
         else if (player.get_value() == 21 && dealer.get_value() != 21){
 
             //player got blackjack
-//            std::cout << "\nplayer got blackjack\n";
+//            std::cout << "\n player got blackjack\n";
 
             p_blackjack = true;
 
@@ -162,7 +172,7 @@ int BlackJackRound(){
         else if (dealer.get_value() == 21 && player.get_value() != 21 ){
 
             //dealer got blackjack
-//            std::cout << "\ndealer got blackjack\n";
+//            std::cout << "\n dealer got blackjack\n";
 
             d_blackjack = true;
 
@@ -172,7 +182,7 @@ int BlackJackRound(){
         else if (player.get_value() > 21){
 
             //player has bust
-//            std::cout << "\nplayer has bust\n";
+//            std::cout << "\n player has bust\n";
 
             p_bust = true;
 
@@ -182,7 +192,7 @@ int BlackJackRound(){
         else if (dealer.get_value() > 21){
 
             //dealer has bust
-            //std::cout << "\ndealer has bust\n";
+            //std::cout << "\n dealer has bust\n";
 
             d_bust = true;
 
@@ -306,7 +316,7 @@ int BlackJackRound(){
     }
     else if (player.get_value() > dealer.get_value()){
 
-        //player has more score than dealer and get's back 1x their chips and their original bet
+        //player has more score than dealer and gets back 1x their chips and their original bet
 
         std::cout << "\nThe player has a higher score than the dealer, the player gets 1x of what they bet in addition of original chips!\n";
 
@@ -340,257 +350,7 @@ int BlackJackRound(){
 
 }
 
-std::vector<int> BlackJackRoundSim(int deckAmount, const std::pair<std::pair<int, std::string>, std::pair<int, std::string>>& player_hand, const std::pair<int, std::string>& dealer_hand, std::string choice){
-
-    std::vector<int> return_vector;
-
-    std::pair<int, std::string> currentCard;
-    std::string playerName;
-    bool game_over = false, chosen = false, player_stand = false, card_revealed = false, p_blackjack = false, p_bust = false, d_blackjack = false, d_bust = false;
-
-    Player player("sim");
-    Dealer dealer;
-
-    Deck deck(deckAmount);
-
-    //deck.print_deck();
-
-    deck.shuffle_deck();
-
-    //deck.print_deck();
-
-    player.add_card(player_hand.first);
-    player.add_card(player_hand.second);
-
-    dealer.add_card(dealer_hand);
-
-    return_vector.emplace_back(player.get_value());
-    return_vector.emplace_back(dealer.get_value());
-
-    if (player.get_value() == 21 && dealer.get_value() == 21){
-
-        //player and dealer has blackjack
-//        std::cout << "\nplayer and dealer has blackjack\n";
-
-        p_blackjack = true;
-        d_blackjack = true;
-
-        game_over = true;
-
-    }
-    else if (player.get_value() == 21 && dealer.get_value() != 21){
-
-        //player got blackjack
-//        std::cout << "\nplayer got blackjack\n";
-
-        p_blackjack = true;
-
-        game_over = true;
-
-    }
-    else if (dealer.get_value() == 21 && player.get_value() != 21 ){
-
-        //dealer got blackjack
-//        std::cout << "\ndealer got blackjack\n";
-
-        d_blackjack = true;
-
-        game_over = true;
-
-    }
-
-    while (!game_over){
-
-        while (!chosen && !player_stand) {
-
-            if (choice == "h"){
-
-                //player has hit
-
-                currentCard = deck.drawCard();
-                player.add_card(currentCard);
-
-                chosen = true;
-
-            }
-            else if (choice == "s"){
-
-                //player has chosen stand
-
-                player_stand = true;
-                chosen = true;
-
-            }
-        }
-
-        chosen = false;
-
-        if (player.get_value() == 21 && dealer.get_value() == 21){
-
-            //player and dealer has blackjack
-//            std::cout << "\nplayer and dealer has blackjack\n";
-
-            p_blackjack = true;
-            d_blackjack = true;
-
-            game_over = true;
-        }
-        else if (player.get_value() == 21 && dealer.get_value() != 21){
-
-            //player got blackjack
-//            std::cout << "\nplayer got blackjack\n";
-
-            p_blackjack = true;
-
-            game_over = true;
-
-        }
-        else if (dealer.get_value() == 21 && player.get_value() != 21 ){
-
-            //dealer got blackjack
-//            std::cout << "\ndealer got blackjack\n";
-
-            d_blackjack = true;
-
-            game_over = true;
-
-        }
-        else if (player.get_value() > 21){
-
-            //player has bust
-//            std::cout << "\nplayer has bust\n";
-
-            p_bust = true;
-
-            game_over = true;
-
-        }
-        else if (dealer.get_value() > 21){
-
-            //dealer has bust
-            //std::cout << "\ndealer has bust\n";
-
-            d_bust = true;
-
-            game_over = true;
-
-        }
-        else{
-
-            //nothing special happened keep playing
-            //std::cout << "\nothing special happened keep playing\n";
-
-        }
-
-        if (player_stand){
-
-            //dealer will reveal his card and keep drawing until either bust or standing at soft 17
-
-            if (!card_revealed){
-
-                card_revealed = true;
-
-            }
-
-
-            if (dealer.get_soft_value() >= 17){
-
-                //dealer will stand on soft 17 or higher
-                //std::cout << "\nThe dealer has soft 17 or higher and will stand\n";
-
-                game_over = true;
-
-            }
-            else{
-
-                //dealer will keep drawing
-                currentCard = deck.drawCard();
-                dealer.add_card(currentCard);
-
-
-            }
-
-        }
-
-    }
-
-    if (p_blackjack && d_blackjack){
-
-        //player and dealer both have blackjacks and therefore have pushed
-
-        return_vector.emplace_back(3);
-
-    }
-    else if (p_blackjack){
-
-        //player has blackjack and takes 1.5 times their bet
-
-        return_vector.emplace_back(1);
-
-    }
-    else if (d_blackjack){
-
-        //dealer has blackjack and player looses their bet
-
-        return_vector.emplace_back(2);
-
-    }
-    else if (p_bust){
-
-        //player has gone bust and looses their bet
-
-        return_vector.emplace_back(2);
-
-    }
-    else if (d_bust){
-
-        //dealer has gone bust and player gets back 1x their chips and their original bet
-
-        return_vector.emplace_back(1);
-
-    }
-    else if (player.get_value() == dealer.get_value()){
-
-        //player and dealer have pushed on the same number, the player gets their chips back
-
-        return_vector.emplace_back(3);
-
-    }
-    else if (player.get_value() > dealer.get_value()){
-
-        //player has more score than dealer and get's back 1x their chips and their original bet
-
-        return_vector.emplace_back(1);
-
-    }
-    else if (dealer.get_value() > player.get_value()){
-
-        //dealer has more score than player and player looses their bet
-
-        return_vector.emplace_back(2);
-
-    }
-    else{
-
-        //This should not happen but here is an easter egg.
-        std::cout << "\nOh no something has gone terribly wrong\n";
-        ShellExecute(nullptr, "open", "https://www.youtube.com/watch?v=dQw4w9WgXcQ",nullptr, nullptr, SW_SHOWNORMAL);
-
-        Sleep(2000);
-
-        return_vector.emplace_back(0);
-
-    }
-
-    result_mutex.lock();
-    results.emplace_back(return_vector);
-    result_mutex.unlock();
-
-    return return_vector;
-
-}
-
-int simulation() {
+int simulation_nonpar() {
 
     int deckAmount = 0, sim_a = 0;
 
@@ -604,244 +364,146 @@ int simulation() {
     std::cout << "\nPlease enter the amount of decks should be in the stack: ";
     std::cin >> deckAmount;
 
-    //TODO Finish sim section
-
-    for (int j = 0; j < sim_a; j++) {
-
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, five), ace, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, five), two, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, five), three, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, five), four, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, five), five, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, five), six, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, five), seven, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, five), eight, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, five), nine, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, five), ten, "h"));
-
-        for (int i = 0; i < 10; i++) {
-
-            thread_queue[i].join();
-
-        }
-
-        thread_queue.clear();
-
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, five), jack, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, five), queen, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, five), king, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, six), ace, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, six), two, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, six), three, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, six), four, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, six), five, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, six), six, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, six), seven, "h"));
-
-        for (int i = 0; i < 10; i++) {
-
-            thread_queue[i].join();
-
-        }
-
-        thread_queue.clear();
-
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, six), eight, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, six), nine, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, six), ten, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, six), jack, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, six), queen, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(five, six), king, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, six), ace, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, six), two, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, six), three, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, six), four, "h"));
-
-
-        for (int i = 0; i < 10; i++) {
-
-            thread_queue[i].join();
-
-        }
-
-        thread_queue.clear();
-
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, six), five, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, six), six, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, six), seven, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, six), eight, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, six), nine, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, six), ten, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, six), jack, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, six), queen, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, six), king, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, seven), ace, "h"));
-
-
-        for (int i = 0; i < 10; i++) {
-
-            thread_queue[i].join();
-
-        }
-
-        thread_queue.clear();
-
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, seven), two, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, seven), three, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, seven), four, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, seven), five, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, seven), six, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, seven), seven, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, seven), eight, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, seven), nine, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, seven), ten, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, seven), jack, "h"));
-
-
-        for (int i = 0; i < 10; i++) {
-
-            thread_queue[i].join();
-
-        }
-
-        thread_queue.clear();
-
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, seven), queen, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(six, seven), king, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, seven), ace, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, seven), two, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, seven), three, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, seven), four, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, seven), five, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, seven), six, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, seven), seven, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, seven), eight, "h"));
-
-
-        for (int i = 0; i < 10; i++) {
-
-            thread_queue[i].join();
-
-        }
-
-        thread_queue.clear();
-
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, seven), nine, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, seven), ten, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, seven), jack, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, seven), queen, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, seven), king, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, eight), ace, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, eight), two, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, eight), three, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, eight), four, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, eight), five, "h"));
-
-
-        for (int i = 0; i < 10; i++) {
-
-            thread_queue[i].join();
-
-        }
-
-        thread_queue.clear();
-
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, eight), six, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, eight), seven, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, eight), eight, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, eight), nine, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, eight), ten, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, eight), jack, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, eight), queen, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(seven, eight), king, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, eight), ace, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, eight), two, "h"));
-
-
-        for (int i = 0; i < 10; i++) {
-
-            thread_queue[i].join();
-
-        }
-
-        thread_queue.clear();
-
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, eight), three, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, eight), four, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, eight), five, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, eight), six, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, eight), seven, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, eight), eight, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, eight), nine, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, eight), ten, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, eight), jack, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, eight), queen, "h"));
-
-        for (int i = 0; i < 10; i++) {
-
-            thread_queue[i].join();
-
-        }
-
-        thread_queue.clear();
-
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, eight), king, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, nine), ace, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, nine), two, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, nine), three, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, nine), four, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, nine), five, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, nine), six, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, nine), seven, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, nine), eight, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, nine), nine, "h"));
-
-        for (int i = 0; i < 10; i++) {
-
-            thread_queue[i].join();
-
-        }
-
-        thread_queue.clear();
-
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, nine), ten, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, nine), jack, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, nine), queen, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(eight, nine), king, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(nine, nine), ace, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(nine, nine), two, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(nine, nine), three, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(nine, nine), four, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(nine, nine), five, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(nine, nine), six, "h"));
-
-        for (int i = 0; i < 10; i++) {
-
-            thread_queue[i].join();
-
-        }
-
-        thread_queue.clear();
-
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(nine, nine), seven, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(nine, nine), eight, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(nine, nine), nine, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(nine, nine), ten, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(nine, nine), jack, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(nine, nine), queen, "h"));
-        thread_queue.emplace_back(std::thread(BlackJackRoundSim, deckAmount, std::make_pair(nine, nine), king, "h"));
-
-        for (int i = 0; i < 7; i++) {
-
-            thread_queue[i].join();
-
-        }
-
-        thread_queue.clear();
+//    farm.add_task(new SimTask(deckAmount, player_cards[0], dealer_cards[0], "h"));
+
+    std::cout << "\nRunning non parallel sim now, please stand by!\n";
+    the_clock::time_point start = the_clock::now();
+
+    for (int s = 0; s < sim_a; s++){
+
+       SimTask(deckAmount, std::make_pair(five, five), ace, "h").run();
+       SimTask(deckAmount, std::make_pair(five, five), two, "h").run();
+       SimTask(deckAmount, std::make_pair(five, five), three, "h").run();
+       SimTask(deckAmount, std::make_pair(five, five), four, "h").run();
+       SimTask(deckAmount, std::make_pair(five, five), five, "h").run();
+       SimTask(deckAmount, std::make_pair(five, five), six, "h").run();
+       SimTask(deckAmount, std::make_pair(five, five), seven, "h").run();
+       SimTask(deckAmount, std::make_pair(five, five), eight, "h").run();
+       SimTask(deckAmount, std::make_pair(five, five), nine, "h").run();
+       SimTask(deckAmount, std::make_pair(five, five), ten, "h").run();
+       SimTask(deckAmount, std::make_pair(five, five), jack, "h").run();
+       SimTask(deckAmount, std::make_pair(five, five), queen, "h").run();
+       SimTask(deckAmount, std::make_pair(five, five), king, "h").run();
+
+       SimTask(deckAmount, std::make_pair(five, six), ace, "h").run();
+       SimTask(deckAmount, std::make_pair(five, six), two, "h").run();
+       SimTask(deckAmount, std::make_pair(five, six), three, "h").run();
+       SimTask(deckAmount, std::make_pair(five, six), four, "h").run();
+       SimTask(deckAmount, std::make_pair(five, six), five, "h").run();
+       SimTask(deckAmount, std::make_pair(five, six), six, "h").run();
+       SimTask(deckAmount, std::make_pair(five, six), seven, "h").run();
+       SimTask(deckAmount, std::make_pair(five, six), eight, "h").run();
+       SimTask(deckAmount, std::make_pair(five, six), nine, "h").run();
+       SimTask(deckAmount, std::make_pair(five, six), ten, "h").run();
+       SimTask(deckAmount, std::make_pair(five, six), jack, "h").run();
+       SimTask(deckAmount, std::make_pair(five, six), queen, "h").run();
+       SimTask(deckAmount, std::make_pair(five, six), king, "h").run();
+
+       SimTask(deckAmount, std::make_pair(six, six), ace, "h").run();
+       SimTask(deckAmount, std::make_pair(six, six), two, "h").run();
+       SimTask(deckAmount, std::make_pair(six, six), three, "h").run();
+       SimTask(deckAmount, std::make_pair(six, six), four, "h").run();
+       SimTask(deckAmount, std::make_pair(six, six), five, "h").run();
+       SimTask(deckAmount, std::make_pair(six, six), six, "h").run();
+       SimTask(deckAmount, std::make_pair(six, six), seven, "h").run();
+       SimTask(deckAmount, std::make_pair(six, six), eight, "h").run();
+       SimTask(deckAmount, std::make_pair(six, six), nine, "h").run();
+       SimTask(deckAmount, std::make_pair(six, six), ten, "h").run();
+       SimTask(deckAmount, std::make_pair(six, six), jack, "h").run();
+       SimTask(deckAmount, std::make_pair(six, six), queen, "h").run();
+       SimTask(deckAmount, std::make_pair(six, six), king, "h").run();
+
+       SimTask(deckAmount, std::make_pair(six, seven), ace, "h").run();
+       SimTask(deckAmount, std::make_pair(six, seven), two, "h").run();
+       SimTask(deckAmount, std::make_pair(six, seven), three, "h").run();
+       SimTask(deckAmount, std::make_pair(six, seven), four, "h").run();
+       SimTask(deckAmount, std::make_pair(six, seven), five, "h").run();
+       SimTask(deckAmount, std::make_pair(six, seven), six, "h").run();
+       SimTask(deckAmount, std::make_pair(six, seven), seven, "h").run();
+       SimTask(deckAmount, std::make_pair(six, seven), eight, "h").run();
+       SimTask(deckAmount, std::make_pair(six, seven), nine, "h").run();
+       SimTask(deckAmount, std::make_pair(six, seven), ten, "h").run();
+       SimTask(deckAmount, std::make_pair(six, seven), jack, "h").run();
+       SimTask(deckAmount, std::make_pair(six, seven), queen, "h").run();
+       SimTask(deckAmount, std::make_pair(six, seven), king, "h").run();
+
+       SimTask(deckAmount, std::make_pair(seven, seven), ace, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, seven), two, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, seven), three, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, seven), four, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, seven), five, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, seven), six, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, seven), seven, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, seven), eight, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, seven), nine, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, seven), ten, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, seven), jack, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, seven), queen, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, seven), king, "h").run();
+
+       SimTask(deckAmount, std::make_pair(seven, eight), ace, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, eight), two, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, eight), three, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, eight), four, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, eight), five, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, eight), six, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, eight), seven, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, eight), eight, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, eight), nine, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, eight), ten, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, eight), jack, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, eight), queen, "h").run();
+       SimTask(deckAmount, std::make_pair(seven, eight), king, "h").run();
+
+       SimTask(deckAmount, std::make_pair(eight, eight), ace, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, eight), two, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, eight), three, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, eight), four, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, eight), five, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, eight), six, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, eight), seven, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, eight), eight, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, eight), nine, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, eight), ten, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, eight), jack, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, eight), queen, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, eight), king, "h").run();
+
+       SimTask(deckAmount, std::make_pair(eight, nine), ace, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, nine), two, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, nine), three, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, nine), four, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, nine), five, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, nine), six, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, nine), seven, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, nine), eight, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, nine), nine, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, nine), ten, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, nine), jack, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, nine), queen, "h").run();
+       SimTask(deckAmount, std::make_pair(eight, nine), king, "h").run();
+
+       SimTask(deckAmount, std::make_pair(nine, nine), ace, "h").run();
+       SimTask(deckAmount, std::make_pair(nine, nine), two, "h").run();
+       SimTask(deckAmount, std::make_pair(nine, nine), three, "h").run();
+       SimTask(deckAmount, std::make_pair(nine, nine), four, "h").run();
+       SimTask(deckAmount, std::make_pair(nine, nine), five, "h").run();
+       SimTask(deckAmount, std::make_pair(nine, nine), six, "h").run();
+       SimTask(deckAmount, std::make_pair(nine, nine), seven, "h").run();
+       SimTask(deckAmount, std::make_pair(nine, nine), eight, "h").run();
+       SimTask(deckAmount, std::make_pair(nine, nine), nine, "h").run();
+       SimTask(deckAmount, std::make_pair(nine, nine), ten, "h").run();
+       SimTask(deckAmount, std::make_pair(nine, nine), jack, "h").run();
+       SimTask(deckAmount, std::make_pair(nine, nine), queen, "h").run();
+       SimTask(deckAmount, std::make_pair(nine, nine), king, "h").run();
 
     }
 
+    the_clock::time_point end = the_clock::now();
 
+    auto time_taken = duration_cast<std::chrono::milliseconds>(end - start).count();
+
+    std::cout << "\nRunning " << sim_a << " simulations in non parallel (total of " << sim_a*117 << " scenarios) took " << time_taken << " ms!\n";
 
 //    for (auto i : results){
 //
@@ -858,7 +520,7 @@ int simulation() {
     std::ofstream outfile;
     outfile.open("outfile.csv");
 
-    for (auto i : results) {
+    for (const auto& i : results) {
 
         for (auto j : i) {
 
@@ -873,14 +535,142 @@ int simulation() {
 
     outfile.close();
 
+    Sleep(5000);
+
+    system("pause");
+
     return 0;
 
 }
+
+int simulation() {
+
+    int deckAmount = 0, sim_a = 0;
+
+    results.clear();
+
+    std::cout << "\nHow many sims you want to run: ";
+    std::cin >> sim_a;
+
+    if (sim_a > 68100){
+
+        std::cout << "Sorry you can only run a max of 68,100 simulations!";
+        Sleep(2000);
+        return 0;
+
+    }
+
+    std::vector<std::thread> thread_queue;
+
+    std::cout << "\nPlease enter the amount of decks should be in the stack: ";
+    std::cin >> deckAmount;
+
+    Farm farm;
+
+//    farm.add_task(new SimTask(deckAmount, player_cards[0], dealer_cards[0], "h"));
+    int tmp = 0;
+    for (int s = 0; s < sim_a; s++){
+
+        for (int i = 0; i < 9; i++){
+
+            //std::cout << "\nPlayer" << i << "\n";
+
+            for (int j = 0; j < 13; j++){
+
+                farm.add_task(new SimTask(deckAmount, player_cards[i], dealer_cards[j], "h"));
+//                if (tmp % 1000 == 0) std::cout << tmp << "\n";
+//                //std::cout << "\nDealer" << j << "\n";
+//                tmp++;
+
+            }
+
+        }
+
+    }
+
+    std::cout << "\nRunning " << farm.size() << " threads now, please stand by!\n";
+
+    the_clock::time_point start = the_clock::now();
+
+    farm.run();
+
+    the_clock::time_point end = the_clock::now();
+
+    auto time_taken = duration_cast<std::chrono::milliseconds>(end - start).count();
+
+    std::cout << "\nRunning " << sim_a << " simulations (total of " << sim_a*117 << " scenarios) took " << time_taken << " ms!\n";
+
+//    for (auto i : results){
+//
+//        for (auto j : i){
+//
+//            std::cout << j << " ";
+//
+//        }
+//
+//        std::cout << "\n";
+//
+//    }
+
+    std::ofstream outfile;
+    outfile.open("outfile.csv");
+
+    for (const auto& i : results) {
+
+        for (auto j : i) {
+
+//            std::cout << j << " ";
+            outfile << j << ",";
+
+        }
+
+        outfile << ",\n";
+
+    }
+
+    outfile.close();
+
+    Sleep(5000);
+
+    system("pause");
+
+    return 0;
+
+}
+
 
 int main()
 {
     int menu_choice = 0, game_result;
     bool menu_picked = false;
+
+    player_cards.emplace_back(std::make_pair(five,five));
+    player_cards.emplace_back(std::make_pair(five,six));
+    player_cards.emplace_back(std::make_pair(six,six));
+    player_cards.emplace_back(std::make_pair(six,seven));
+    player_cards.emplace_back(std::make_pair(seven,seven));
+    player_cards.emplace_back(std::make_pair(seven,eight));
+    player_cards.emplace_back(std::make_pair(eight,eight));
+    player_cards.emplace_back(std::make_pair(eight,nine));
+    player_cards.emplace_back(std::make_pair(nine,nine));
+
+    dealer_cards.emplace_back(ace);
+    dealer_cards.emplace_back(two);
+    dealer_cards.emplace_back(three);
+    dealer_cards.emplace_back(four);
+    dealer_cards.emplace_back(five);
+    dealer_cards.emplace_back(six);
+    dealer_cards.emplace_back(seven);
+    dealer_cards.emplace_back(eight);
+    dealer_cards.emplace_back(nine);
+    dealer_cards.emplace_back(ten);
+    dealer_cards.emplace_back(jack);
+    dealer_cards.emplace_back(queen);
+    dealer_cards.emplace_back(king);
+
+
+
+
 
     while (!menu_picked){
 
@@ -888,7 +678,7 @@ int main()
 
         std::cout << "BlackJack Basic Training Simulator\n";
 
-        std::cout << "Menu\n\n1. Play round of Black Jack\n2. Run Simulations to Generate Strategy Chart\n3. Quit";
+        std::cout << "Menu\n\n1. Play round of Black Jack\n2. Run Simulations to Generate Strategy Chart\n3. Run Simulations to Generate Strategy Chart (SingleThread Mode)\n4. Quit";
 
         std::cout << "\nMenu Choice: ";
 
@@ -912,6 +702,11 @@ int main()
                 break;
 
             case 3:
+                std::cout << "\nStarting Non Par Simulation\n";
+                simulation_nonpar();
+                break;
+
+            case 4:
                 std::cout << "\nQuitting Program\n";
                 menu_picked = true;
                 return 0;
