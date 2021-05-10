@@ -21,7 +21,6 @@ int Farm::size(){
 
 void Farm::run()
 {
-    // FIXME - Implement this
 
     auto cores = std::thread::hardware_concurrency();
 
