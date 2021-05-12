@@ -13,8 +13,26 @@
 class SimTask : public Task
 {
 public:
-    SimTask(const int& deckAmount, std::pair<std::pair<int, std::string>, std::pair<int, std::string>> player_hand, std::pair<int, std::string>  dealer_hand, std::string  choice)
-            : deckAmount_(deckAmount), player_hand_(std::move(player_hand)), dealer_hand_(std::move(dealer_hand)), choice_(std::move(choice))
+    SimTask(std::pair<std::pair<int, std::string>, std::pair<int, std::string>> player_hand, std::pair<int, std::string>  dealer_hand, std::string  choice, const int& count)
+            : player_hand_(std::move(player_hand)), dealer_hand_(std::move(dealer_hand)), choice_(std::move(choice)), count_(count)
+    {
+    }
+
+    void run();
+
+private:
+    const std::pair<std::pair<int, std::string>, std::pair<int, std::string>> player_hand_;
+    const std::pair<int, std::string> dealer_hand_;
+    const std::string choice_;
+    const int count_;
+
+};
+
+class SimTaskNonPar : public Task
+{
+public:
+    SimTaskNonPar(const int& DA, std::pair<std::pair<int, std::string>, std::pair<int, std::string>> player_hand, std::pair<int, std::string>  dealer_hand, std::string  choice)
+            : deckAmount_(DA),player_hand_(std::move(player_hand)), dealer_hand_(std::move(dealer_hand)), choice_(std::move(choice))
     {
     }
 
@@ -25,6 +43,20 @@ private:
     const std::pair<std::pair<int, std::string>, std::pair<int, std::string>> player_hand_;
     const std::pair<int, std::string> dealer_hand_;
     const std::string choice_;
+
+};
+
+class StartTask : public Task
+{
+
+public:
+    StartTask()
+    {
+    }
+
+    void run();
+
+private:
 
 };
 

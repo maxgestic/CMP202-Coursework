@@ -33,10 +33,19 @@ std::pair king = std::make_pair(10,"KING");
 std::vector<std::pair<std::pair<int, std::string>,std::pair<int, std::string>>> player_cards;
 std::vector<std::pair<int, std::string>> dealer_cards;
 
-typedef std::chrono::steady_clock the_clock;
+
 
 std::vector<std::vector<int>> results = {};
 std::mutex result_mutex;
+
+std::condition_variable ready_cv;
+std::mutex ready_mutex;
+bool ready = false;
+int deckAmount = 0;
+
+typedef std::chrono::steady_clock the_clock;
+
+the_clock::time_point start = the_clock::now();
 
 int BlackJackRound(){
 
@@ -359,8 +368,6 @@ int simulation_nonpar() {
     std::cout << "\nHow many sims you want to run: ";
     std::cin >> sim_a;
 
-    std::vector<std::thread> thread_queue;
-
     std::cout << "\nPlease enter the amount of decks should be in the stack: ";
     std::cin >> deckAmount;
 
@@ -370,132 +377,132 @@ int simulation_nonpar() {
     the_clock::time_point start = the_clock::now();
 
     for (int s = 0; s < sim_a; s++){
+        
+        SimTaskNonPar(deckAmount, std::make_pair(five, five), ace, "h").run();
+        SimTaskNonPar(deckAmount, std::make_pair(five, five), two, "h").run();
+        SimTaskNonPar(deckAmount, std::make_pair(five, five), three, "h").run();
+        SimTaskNonPar(deckAmount, std::make_pair(five, five), four, "h").run();
+        SimTaskNonPar(deckAmount, std::make_pair(five, five), five, "h").run();
+        SimTaskNonPar(deckAmount, std::make_pair(five, five), six, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, five), seven, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, five), eight, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, five), nine, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, five), ten, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, five), jack, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, five), queen, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, five), king, "h").run();
 
-       SimTask(deckAmount, std::make_pair(five, five), ace, "h").run();
-       SimTask(deckAmount, std::make_pair(five, five), two, "h").run();
-       SimTask(deckAmount, std::make_pair(five, five), three, "h").run();
-       SimTask(deckAmount, std::make_pair(five, five), four, "h").run();
-       SimTask(deckAmount, std::make_pair(five, five), five, "h").run();
-       SimTask(deckAmount, std::make_pair(five, five), six, "h").run();
-       SimTask(deckAmount, std::make_pair(five, five), seven, "h").run();
-       SimTask(deckAmount, std::make_pair(five, five), eight, "h").run();
-       SimTask(deckAmount, std::make_pair(five, five), nine, "h").run();
-       SimTask(deckAmount, std::make_pair(five, five), ten, "h").run();
-       SimTask(deckAmount, std::make_pair(five, five), jack, "h").run();
-       SimTask(deckAmount, std::make_pair(five, five), queen, "h").run();
-       SimTask(deckAmount, std::make_pair(five, five), king, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, six), ace, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, six), two, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, six), three, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, six), four, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, six), five, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, six), six, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, six), seven, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, six), eight, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, six), nine, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, six), ten, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, six), jack, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, six), queen, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(five, six), king, "h").run();
 
-       SimTask(deckAmount, std::make_pair(five, six), ace, "h").run();
-       SimTask(deckAmount, std::make_pair(five, six), two, "h").run();
-       SimTask(deckAmount, std::make_pair(five, six), three, "h").run();
-       SimTask(deckAmount, std::make_pair(five, six), four, "h").run();
-       SimTask(deckAmount, std::make_pair(five, six), five, "h").run();
-       SimTask(deckAmount, std::make_pair(five, six), six, "h").run();
-       SimTask(deckAmount, std::make_pair(five, six), seven, "h").run();
-       SimTask(deckAmount, std::make_pair(five, six), eight, "h").run();
-       SimTask(deckAmount, std::make_pair(five, six), nine, "h").run();
-       SimTask(deckAmount, std::make_pair(five, six), ten, "h").run();
-       SimTask(deckAmount, std::make_pair(five, six), jack, "h").run();
-       SimTask(deckAmount, std::make_pair(five, six), queen, "h").run();
-       SimTask(deckAmount, std::make_pair(five, six), king, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, six), ace, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, six), two, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, six), three, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, six), four, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, six), five, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, six), six, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, six), seven, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, six), eight, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, six), nine, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, six), ten, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, six), jack, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, six), queen, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, six), king, "h").run();
 
-       SimTask(deckAmount, std::make_pair(six, six), ace, "h").run();
-       SimTask(deckAmount, std::make_pair(six, six), two, "h").run();
-       SimTask(deckAmount, std::make_pair(six, six), three, "h").run();
-       SimTask(deckAmount, std::make_pair(six, six), four, "h").run();
-       SimTask(deckAmount, std::make_pair(six, six), five, "h").run();
-       SimTask(deckAmount, std::make_pair(six, six), six, "h").run();
-       SimTask(deckAmount, std::make_pair(six, six), seven, "h").run();
-       SimTask(deckAmount, std::make_pair(six, six), eight, "h").run();
-       SimTask(deckAmount, std::make_pair(six, six), nine, "h").run();
-       SimTask(deckAmount, std::make_pair(six, six), ten, "h").run();
-       SimTask(deckAmount, std::make_pair(six, six), jack, "h").run();
-       SimTask(deckAmount, std::make_pair(six, six), queen, "h").run();
-       SimTask(deckAmount, std::make_pair(six, six), king, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, seven), ace, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, seven), two, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, seven), three, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, seven), four, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, seven), five, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, seven), six, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, seven), seven, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, seven), eight, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, seven), nine, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, seven), ten, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, seven), jack, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, seven), queen, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(six, seven), king, "h").run();
 
-       SimTask(deckAmount, std::make_pair(six, seven), ace, "h").run();
-       SimTask(deckAmount, std::make_pair(six, seven), two, "h").run();
-       SimTask(deckAmount, std::make_pair(six, seven), three, "h").run();
-       SimTask(deckAmount, std::make_pair(six, seven), four, "h").run();
-       SimTask(deckAmount, std::make_pair(six, seven), five, "h").run();
-       SimTask(deckAmount, std::make_pair(six, seven), six, "h").run();
-       SimTask(deckAmount, std::make_pair(six, seven), seven, "h").run();
-       SimTask(deckAmount, std::make_pair(six, seven), eight, "h").run();
-       SimTask(deckAmount, std::make_pair(six, seven), nine, "h").run();
-       SimTask(deckAmount, std::make_pair(six, seven), ten, "h").run();
-       SimTask(deckAmount, std::make_pair(six, seven), jack, "h").run();
-       SimTask(deckAmount, std::make_pair(six, seven), queen, "h").run();
-       SimTask(deckAmount, std::make_pair(six, seven), king, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, seven), ace, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, seven), two, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, seven), three, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, seven), four, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, seven), five, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, seven), six, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, seven), seven, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, seven), eight, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, seven), nine, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, seven), ten, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, seven), jack, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, seven), queen, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, seven), king, "h").run();
 
-       SimTask(deckAmount, std::make_pair(seven, seven), ace, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, seven), two, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, seven), three, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, seven), four, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, seven), five, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, seven), six, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, seven), seven, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, seven), eight, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, seven), nine, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, seven), ten, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, seven), jack, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, seven), queen, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, seven), king, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, eight), ace, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, eight), two, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, eight), three, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, eight), four, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, eight), five, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, eight), six, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, eight), seven, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, eight), eight, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, eight), nine, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, eight), ten, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, eight), jack, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, eight), queen, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(seven, eight), king, "h").run();
 
-       SimTask(deckAmount, std::make_pair(seven, eight), ace, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, eight), two, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, eight), three, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, eight), four, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, eight), five, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, eight), six, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, eight), seven, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, eight), eight, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, eight), nine, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, eight), ten, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, eight), jack, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, eight), queen, "h").run();
-       SimTask(deckAmount, std::make_pair(seven, eight), king, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, eight), ace, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, eight), two, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, eight), three, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, eight), four, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, eight), five, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, eight), six, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, eight), seven, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, eight), eight, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, eight), nine, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, eight), ten, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, eight), jack, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, eight), queen, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, eight), king, "h").run();
 
-       SimTask(deckAmount, std::make_pair(eight, eight), ace, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, eight), two, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, eight), three, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, eight), four, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, eight), five, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, eight), six, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, eight), seven, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, eight), eight, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, eight), nine, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, eight), ten, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, eight), jack, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, eight), queen, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, eight), king, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, nine), ace, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, nine), two, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, nine), three, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, nine), four, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, nine), five, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, nine), six, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, nine), seven, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, nine), eight, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, nine), nine, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, nine), ten, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, nine), jack, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, nine), queen, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(eight, nine), king, "h").run();
 
-       SimTask(deckAmount, std::make_pair(eight, nine), ace, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, nine), two, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, nine), three, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, nine), four, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, nine), five, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, nine), six, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, nine), seven, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, nine), eight, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, nine), nine, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, nine), ten, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, nine), jack, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, nine), queen, "h").run();
-       SimTask(deckAmount, std::make_pair(eight, nine), king, "h").run();
-
-       SimTask(deckAmount, std::make_pair(nine, nine), ace, "h").run();
-       SimTask(deckAmount, std::make_pair(nine, nine), two, "h").run();
-       SimTask(deckAmount, std::make_pair(nine, nine), three, "h").run();
-       SimTask(deckAmount, std::make_pair(nine, nine), four, "h").run();
-       SimTask(deckAmount, std::make_pair(nine, nine), five, "h").run();
-       SimTask(deckAmount, std::make_pair(nine, nine), six, "h").run();
-       SimTask(deckAmount, std::make_pair(nine, nine), seven, "h").run();
-       SimTask(deckAmount, std::make_pair(nine, nine), eight, "h").run();
-       SimTask(deckAmount, std::make_pair(nine, nine), nine, "h").run();
-       SimTask(deckAmount, std::make_pair(nine, nine), ten, "h").run();
-       SimTask(deckAmount, std::make_pair(nine, nine), jack, "h").run();
-       SimTask(deckAmount, std::make_pair(nine, nine), queen, "h").run();
-       SimTask(deckAmount, std::make_pair(nine, nine), king, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(nine, nine), ace, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(nine, nine), two, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(nine, nine), three, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(nine, nine), four, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(nine, nine), five, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(nine, nine), six, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(nine, nine), seven, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(nine, nine), eight, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(nine, nine), nine, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(nine, nine), ten, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(nine, nine), jack, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(nine, nine), queen, "h").run();
+       SimTaskNonPar(deckAmount, std::make_pair(nine, nine), king, "h").run();
 
     }
 
@@ -545,27 +552,32 @@ int simulation_nonpar() {
 
 int simulation() {
 
-    int deckAmount = 0, sim_a = 0;
+    int sim_a = 0;
+    bool valid = false;
 
-    results.clear();
+    while(!valid){
 
-    std::cout << "\nHow many sims you want to run: ";
-    std::cin >> sim_a;
+        std::cout << "\nHow many sims you want to run: ";
+        std::cin >> sim_a;
 
-    if (sim_a > 68100){
+        if (sim_a > 68100){
 
-        std::cout << "Sorry you can only run a max of 68,100 simulations!";
-        Sleep(2000);
-        return 0;
+            std::cout << "\nSorry you can only run a max of 68,100 simulations!\n";
+            Sleep(2000);
+
+        }
+        else{
+
+            valid = true;
+
+        }
 
     }
 
-    std::vector<std::thread> thread_queue;
-
-    std::cout << "\nPlease enter the amount of decks should be in the stack: ";
-    std::cin >> deckAmount;
-
     Farm farm;
+    farm.add_task(new StartTask());
+
+    results.clear();
 
 //    farm.add_task(new SimTask(deckAmount, player_cards[0], dealer_cards[0], "h"));
     int tmp = 0;
@@ -577,10 +589,10 @@ int simulation() {
 
             for (int j = 0; j < 13; j++){
 
-                farm.add_task(new SimTask(deckAmount, player_cards[i], dealer_cards[j], "h"));
+                farm.add_task(new SimTask(player_cards[i], dealer_cards[j], "h", tmp));
 //                if (tmp % 1000 == 0) std::cout << tmp << "\n";
 //                //std::cout << "\nDealer" << j << "\n";
-//                tmp++;
+                tmp++;
 
             }
 
@@ -590,7 +602,6 @@ int simulation() {
 
     std::cout << "\nRunning " << farm.size() << " threads now, please stand by!\n";
 
-    the_clock::time_point start = the_clock::now();
 
     farm.run();
 
